@@ -1,15 +1,18 @@
 import PizzaBox from "./PizzaBox";
 import { useState , useEffect } from "react";
 
+
+const initialBoard = [
+  { isOpen: false, isClicked: false },
+  { isOpen: false, isClicked: false },
+  { isOpen: false, isClicked: false },
+  { isOpen: false, isClicked: false },
+  { isOpen: false, isClicked: false },
+];
+
 export default function PizzaBoard() {
   // a state to track for every box if it is open or if it been clicked
-  const [board, setBoard] = useState([
-    { isOpen: false, isClicked: false },
-    { isOpen: false, isClicked: false },
-    { isOpen: false, isClicked: false },
-    { isOpen: false, isClicked: false },
-    { isOpen: false, isClicked: false },
-  ]);
+  const [board, setBoard] = useState(initialBoard);
   // state for start button
   const [gameStart , setGameStart] = useState(false);
   // to aviod the same index 
@@ -20,10 +23,20 @@ export default function PizzaBoard() {
     setGameStart(true);
   }
 
+  // restart funcion
+  function restart() {
+    // restart the states of the boxes
+    setBoard(initialBoard);
+    // restart the index
+    setLastOpenIndex(null);
+    // restart the button
+    setGameStart(false);
+  }
+
   // function to open random box
   function openRandomBox() {
     // get a random index
-    const randomIndex = Math.floor(Math.random() * board.length);
+    let randomIndex = Math.floor(Math.random() * board.length);
 
     // to aviod the same index 
     while (randomIndex === lastOpenIndex) {
@@ -39,6 +52,7 @@ export default function PizzaBoard() {
       };
     });
     setBoard(newBoard);
+    setLastOpenIndex(randomIndex);
   }
 
   // use effect for timmer to open every X secondes a random box
@@ -83,7 +97,7 @@ export default function PizzaBoard() {
       <div className="flex justify-center gap-4">
         {createBoxes2()}
       </div>
-      <button onClick={handleGameStart} >START</button>
+      <button onClick={gameStart ? restart : handleGameStart}>{gameStart ? "RESTART" : "START"}</button>
     </div>
   );
 }
