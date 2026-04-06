@@ -1,8 +1,11 @@
 import PizzaBox from "./PizzaBox";
 import Header from "./Header";
 import { useState, useEffect, useRef } from "react";
+import GameOver from "./GameOver";
 
 const initialBoard = [
+  { isOpen: false, isClicked: false },
+  { isOpen: false, isClicked: false },
   { isOpen: false, isClicked: false },
   { isOpen: false, isClicked: false },
   { isOpen: false, isClicked: false },
@@ -24,13 +27,36 @@ export default function PizzaBoard() {
   const isPausedRef = useRef(false);
   // to save the timeout so we can clean it on restart
   const timeoutRef = useRef(null);
+  // timer 
+  const timerRef = useRef(30);
+  const [timer, setTimer] = useState(30);
 
+  // control the timer
+  useEffect(() => {
+    timerRef.current = timer;
+  }, [timer]);
+
+  useEffect(() => {
+  if (!gameStart) return;
+
+  const intervalId = setInterval(() => {
+    setTimer((prev) => {
+      if (prev <= 1) {
+        clearInterval(intervalId);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(intervalId);
+}, [gameStart]);  
   // Catch tracking function
   function updateOnClickOfBox(index) {
     const clickedBox = board[index];
 
     // check if it not open / allready clicked / game is paused
-    if (!clickedBox.isOpen || clickedBox.isClicked || isPausedRef.current) {
+    if (!clickedBox.isOpen || clickedBox.isClicked || isPausedRef.current || timerRef.current === 0) {
       return;
     }
 
@@ -49,7 +75,7 @@ export default function PizzaBoard() {
     timeoutRef.current = setTimeout(() => {
       openRandomBox();
       isPausedRef.current = false;
-    }, 350);
+    }, 300);
   }
 
   // fucntion to handle click
@@ -68,6 +94,7 @@ export default function PizzaBoard() {
     // restart the button
     setGameStart(false);
     setScore(0);
+    setTimer(30);
 
     // clear timeout if exist
     if (timeoutRef.current) {
@@ -108,7 +135,7 @@ export default function PizzaBoard() {
 
     // now every X time
     const intervalId = setInterval(() => {
-      if (!isPausedRef.current) {
+      if (!isPausedRef.current && timerRef.current > 0) {
         openRandomBox();
       }
     }, 750);
@@ -125,7 +152,7 @@ export default function PizzaBoard() {
 
   // function to present the first line of the boxes
   function createBoxes1() {
-    return board.slice(0, 2).map((box, index) => (
+    return board.slice(0, 3).map((box, index) => (
       <PizzaBox
         boxOpen={box.isOpen}
         key={index}
@@ -138,32 +165,45 @@ export default function PizzaBoard() {
 
   // function to present the seconed line of the boxes
   function createBoxes2() {
-    return board.slice(2).map((box, index) => (
+    return board.slice(3).map((box, index) => (
       <PizzaBox
         boxOpen={box.isOpen}
-        key={index + 2}
+        key={index + 3}
         isClicked={box.isClicked}
-        index={index + 2}
+        index={index + 3}
         handleClick={updateOnClickOfBox}
       />
     ));
   }
 
   return (
-    <div>
-      <Header score={score} />
-      <div className="flex flex-col items-center gap-4">
-        <div className="flex justify-center gap-4">{createBoxes1()}</div>
-        <div className="flex justify-center gap-4">{createBoxes2()}</div>
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={gameStart ? restart : handleGameStart}
-            className="cursor-pointer rounded-2xl border-4 border-amber-900 bg-gradient-to-br from-orange-300 via-orange-400 to-amber-500 px-8 py-3 text-xl font-bold text-amber-950 shadow-[0_8px_20px_rgba(120,53,15,0.35)] transition-all duration-200 hover:scale-105 hover:shadow-[0_12px_30px_rgba(120,53,15,0.45)] active:scale-95"
-          >
-            {gameStart ? "RESTART" : "START"}
-          </button>
+  <div className="h-screen flex flex-col items-center justify-between px-4 py-3 overflow-hidden">
+    <Header score={score} timer={timer} />
+
+    <div className="flex flex-col items-center gap-4 sm:gap-6">
+      <div className="flex flex-col items-center gap-3 sm:gap-4">
+        <div className="flex justify-center gap-3 sm:gap-4">
+          {createBoxes1()}
+        </div>
+
+        <div className="flex justify-center gap-3 sm:gap-4">
+          {createBoxes2()}
         </div>
       </div>
+
+      <div className="mt-6 flex justify-center">
+        <button
+          onClick={gameStart ? restart : handleGameStart}
+          className="cursor-pointer rounded-2xl border-4 border-amber-900 bg-gradient-to-br from-orange-300 via-orange-400 to-amber-500 px-5 py-2 text-base font-bold text-amber-950 shadow-[0_8px_20px_rgba(120,53,15,0.35)] transition-all duration-200 hover:scale-105 hover:shadow-[0_12px_30px_rgba(120,53,15,0.45)] active:scale-95 sm:px-8 sm:py-3 sm:text-xl"
+        >
+          {gameStart ? "RESTART" : "START"}
+        </button>
+
+        {timer === 0 && (
+          <GameOver score={score} timer={timer} restartGame={restart} />
+        )}
+      </div>
     </div>
-  );
+  </div>
+);
 }

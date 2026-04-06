@@ -6,9 +6,9 @@ import PizzaBoard from "./components/PizzaBoard";
 function App() {
   return (
     <div className="min-h-screen bg-orange-50">
-      <PizzaBoard/>
+      <PizzaBoard />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
