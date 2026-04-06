@@ -21,7 +21,7 @@ Test your reflexes by clicking the correct pizza box before it disappears — th
 - Tailwind CSS
 
 ## 🚀 Live Demo
-
+https://grab-the-pizza.vercel.app/
 
 ## 📚 What I Practiced
 - Managing complex state and game logic
@@ -31,3 +31,5 @@ Test your reflexes by clicking the correct pizza box before it disappears — th
 - Building interactive UI components
 
 ## 📸 Preview
+<img width="1178" height="943" alt="image" src="https://github.com/user-attachments/assets/7632eb60-6d96-4eed-a717-bb365e5eabe6" />
+
