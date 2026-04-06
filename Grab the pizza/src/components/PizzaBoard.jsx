@@ -177,10 +177,10 @@ export default function PizzaBoard() {
   }
 
   return (
-  <div className="h-screen flex flex-col items-center justify-between px-4 py-3 overflow-hidden">
-    <Header score={score} timer={timer} />
+  <div className="min-h-screen flex flex-col items-center px-4 py-4">
+  <Header score={score} timer={timer} />
 
-    <div className="flex flex-col items-center gap-4 sm:gap-6">
+  <div className="mt-8 flex flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-3 sm:gap-4">
         <div className="flex justify-center gap-3 sm:gap-4">
           {createBoxes1()}
